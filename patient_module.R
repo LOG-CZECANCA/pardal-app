@@ -7,7 +7,7 @@ patient_UI <- function(id) {
     sidebarPanel(
       width = 3,
       
-      # 🌟 NEW: Patient Lookup Search Box
+      # Patient Lookup Search Box
       div(style = "margin-bottom: 20px;",
           h4("Patient Lookup", style = "margin-top: 0;"),
           selectizeInput(
@@ -20,7 +20,7 @@ patient_UI <- function(id) {
       ),
       tags$hr(style = "border-color: #ddd; margin-top: 5px; margin-bottom: 15px;"),
       
-      # 🌟 Output View Buttons
+      # Output View Buttons
       div(class = "output-radio-group",
           radioButtons(
             ns("patient_view_mode"),
@@ -37,7 +37,7 @@ patient_UI <- function(id) {
       tags$hr(),
       h4("Downloads"),
       
-      # 🌟 Transparent Download Buttons
+      # Transparent Download Buttons
       div(style = "display: flex; flex-direction: column; gap: 5px;",
           downloadButton(ns("dl_main"), "Variants (List)", class = "btn-sm", style = "background-color: transparent; color: black; border: 1px solid #ccc;"),
           downloadButton(ns("dl_parallel"), "Variants (Parallel)", class = "btn-sm", style = "background-color: transparent; color: black; border: 1px solid #ccc;"),
@@ -109,6 +109,7 @@ patient_UI <- function(id) {
         DTOutput(ns("patient_ase_table"))
       ),
       
+      # --- COUNTS VIEW ---
       conditionalPanel(
         condition = "input.patient_view_mode == 'counts'", ns = ns,
         checkboxInput(ns("filter_low_counts"), "Filter out Read Counts <= 3", value = TRUE),
@@ -117,19 +118,15 @@ patient_UI <- function(id) {
             actionButton(ns("btn_apply_counts_filter"), "Apply Filters Globally", class="btn-sm", style="background-color: #FC65AB; color: white; border: none;")
         ),
         DTOutput(ns("patient_counts_table")),
-        tags$hr(),
-        div(style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;",
-            h4("Expression & Counts Explorer", style = "margin: 0;"),
-            actionButton(ns("btn_screenshot_cnt"), "Save Image", icon = icon("camera"), class = "btn-primary btn-sm", onclick = "captureIGV('capture-container-counts')")
-        ),
-        div(id = "capture-container-counts", style = "background-color: white; padding: 10px; border-radius: 4px;", 
-            fluidRow(
-              column(4, div(class = "no-clear-click", plotOutput(ns("patient_counts_plot"), height = "400px"))),
-              column(8, div(class = "no-clear-click", style = "overflow-x: auto;", plotly::plotlyOutput(ns("gtex_expression_plot"), height = "400px")))
-            )
+        
+        tags$hr(style = "margin-top: 10px; margin-bottom: 10px;"),
+        
+        h4("GTEx Tissue Expression", style="margin-top: 10px;"), 
+        div(class = "no-clear-click", style = "margin-bottom: 15px; border: 1px solid #eee; padding: 15px; border-radius: 4px; background-color: white; overflow-x: auto;", 
+            plotly::plotlyOutput(ns("gtex_expression_plot"), height = "1000px")
         )
       ),
-      
+
       conditionalPanel(
         condition = "input.patient_view_mode == 'outrider'", ns = ns,
         div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;",
@@ -176,7 +173,7 @@ patient_UI <- function(id) {
 patient_Server <- function(id, clear_trigger = NULL, igv_ready = NULL) {
   moduleServer(id, function(input, output, session) {
     
-    # 🌟 NEW: Automatically populate the patient dropdown
+    # Automatically populate the patient dropdown
     observe({
       if (exists("parallel_data") && !is.null(parallel_data)) {
         patients <- sort(unique(as.character(parallel_data$sample_id)))

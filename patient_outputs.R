@@ -2,13 +2,13 @@
 
 output$patient_table_output <- renderDT({
   df <- selected_data_patient()
-  display_df <- format_for_display(df) # 🌟 APPLIES COSMETICS
+  display_df <- format_for_display(df) # APPLIES COSMETICS
   use_paging <- nrow(display_df) > 1000
   datatable(display_df, options = list(paging = use_paging, scrollX = TRUE, scrollY = if (!use_paging) "500px" else NULL, scrollCollapse = TRUE, stateSave = TRUE), filter = "top", selection = "single", rownames = FALSE)
 }, server = TRUE)
 
 output$patient_parallel_table <- renderDT({
-  df <- patient_parallel_display_data() # 🌟 USES MIRRORED DATA
+  df <- patient_parallel_display_data() # USES MIRRORED DATA
   if (nrow(df) == 0) return(data.frame(Message = "No parallel data found"))
   display_df <- format_for_display(df)
   datatable(display_df, options = list(paging = nrow(display_df) > 1000, scrollX = TRUE, scrollY = if (nrow(display_df) <= 1000) "300px" else NULL, scrollCollapse = TRUE, stateSave = TRUE), filter = "top", selection = "single", class = "stripe hover row-border nowrap compact", rownames = FALSE)
@@ -220,30 +220,16 @@ output$variant_details_box_var <- renderUI({ get_details_html("variant", session
 output$variant_details_box_fra <- renderUI({ get_details_html("fraser", session) })
 
 
-# ==========================================
-# 🌟 SAFE SUBSET HELPER (PREVENTS EMPTY NA ROWS)
-# ==========================================
-safe_subset <- function(df, idx) {
-  if (is.null(idx) || is.null(df) || nrow(df) == 0) return(df)
-  idx <- as.integer(idx)
-  # Strictly drop out-of-bounds indices so R doesn't create NA rows!
-  idx <- idx[!is.na(idx) & idx > 0 & idx <= nrow(df)]
-  return(df[idx, , drop = FALSE])
-}
-
 # --- DOWNLOAD HANDLERS ---
 output$dl_main <- downloadHandler(
   filename = function() { paste0("Filtered_Variants_Main_", Sys.Date(), ".csv") }, 
-  content = function(file) { 
-    df <- safe_subset(selected_data_patient(), input$patient_table_output_rows_all)
-    write.csv(format_for_display(df), file, row.names = FALSE) 
-  }
+  content = function(file) { write.csv(format_for_display(selected_data_patient()), file, row.names = FALSE) }
 )
 
 output$dl_parallel <- downloadHandler(
   filename = function() { paste0("Filtered_Variants_Parallel_", Sys.Date(), ".csv") }, 
   content = function(file) { 
-    df <- as.data.frame(safe_subset(patient_parallel_display_data(), input$patient_parallel_table_rows_all))
+    df <- patient_parallel_display_data()
     df[] <- lapply(df, function(x) if (is.list(x)) sapply(x, function(y) paste(as.character(y), collapse=",")) else x)
     write.csv(format_for_display(df), file, row.names = FALSE) 
   }
@@ -251,30 +237,29 @@ output$dl_parallel <- downloadHandler(
 
 output$dl_ase <- downloadHandler(
   filename = function() { paste0("Filtered_ASE_", Sys.Date(), ".csv") },
-  content = function(file) { write.csv(safe_subset(patient_filtered_ase(), input$patient_ase_table_rows_all), file, row.names = FALSE) }
+  content = function(file) { write.csv(patient_filtered_ase(), file, row.names = FALSE) }
 )
 
 output$dl_outrider <- downloadHandler(
   filename = function() { paste0("Filtered_Outrider_", Sys.Date(), ".csv") },
-  content = function(file) { write.csv(safe_subset(patient_filtered_outrider(), input$patient_outrider_table_rows_all), file, row.names = FALSE) }
+  content = function(file) { write.csv(patient_filtered_outrider(), file, row.names = FALSE) }
 )
 
 output$dl_fraser <- downloadHandler(
   filename = function() { paste0("Filtered_Fraser_", Sys.Date(), ".csv") },
-  content = function(file) { write.csv(safe_subset(patient_filtered_fraser(), input$patient_fraser_table_rows_all), file, row.names = FALSE) }
+  content = function(file) { write.csv(patient_filtered_fraser(), file, row.names = FALSE) }
 )
 
 output$dl_counts <- downloadHandler(
   filename = function() { paste0("Filtered_Counts_", Sys.Date(), ".csv") },
-  content = function(file) { write.csv(safe_subset(patient_filtered_counts(), input$patient_counts_table_rows_all), file, row.names = FALSE) }
+  content = function(file) { write.csv(patient_filtered_counts(), file, row.names = FALSE) }
 )
 
 output$dl_joined <- downloadHandler(
   filename = function() { paste0("Filtered_Variants_Joined_", Sys.Date(), ".csv") }, 
   content = function(file) { 
-    main_df <- safe_subset(selected_data_patient(), input$patient_table_output_rows_all)
-    parallel_df <- safe_subset(patient_parallel_display_data(), input$patient_parallel_table_rows_all)
-    
+    main_df <- selected_data_patient()
+    parallel_df <- patient_parallel_display_data()
     if (nrow(main_df) > 0 && nrow(parallel_df) > 0) { 
       parallel_df[] <- lapply(parallel_df, function(x) if (is.list(x)) sapply(x, function(y) paste(as.character(y), collapse=",")) else x)
       join_keys <- intersect(c("chr", "pos", "ref", "alt", "strand"), intersect(colnames(main_df), colnames(parallel_df)))
@@ -302,12 +287,12 @@ output$dl_everything <- downloadHandler(
       }
     }
     
-    write_if_data(format_for_display(safe_subset(selected_data_patient(), input$patient_table_output_rows_all)), "Variants_Main.csv")
-    write_if_data(format_for_display(safe_subset(patient_parallel_display_data(), input$patient_parallel_table_rows_all)), "Variants_Parallel.csv")
-    write_if_data(safe_subset(patient_filtered_ase(), input$patient_ase_table_rows_all), "ASE_Outliers.csv")
-    write_if_data(safe_subset(patient_filtered_outrider(), input$patient_outrider_table_rows_all), "Outrider_Outliers.csv")
-    write_if_data(safe_subset(patient_filtered_fraser(), input$patient_fraser_table_rows_all), "Fraser_Outliers.csv")
-    write_if_data(safe_subset(patient_filtered_counts(), input$patient_counts_table_rows_all), "Read_Counts.csv")
+    write_if_data(selected_data_patient(), "Variants_Main.csv")
+    write_if_data(patient_parallel_display_data(), "Variants_Parallel.csv")
+    write_if_data(patient_filtered_ase(), "ASE_Outliers.csv")
+    write_if_data(patient_filtered_outrider(), "Outrider_Outliers.csv")
+    write_if_data(patient_filtered_fraser(), "Fraser_Outliers.csv")
+    write_if_data(patient_filtered_counts(), "Read_Counts.csv")
     
     if (length(files) > 0) { zip(file, files) } else { write.csv(data.frame(Message="No data generated."), file, row.names=FALSE) }
   }

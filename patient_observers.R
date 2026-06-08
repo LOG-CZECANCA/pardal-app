@@ -83,7 +83,6 @@ broadcast_global_filter <- function(src, data) {
   p_cf_fraser(if (src == "fraser") NULL else payload)
 }
 
-# 🌟 SIMULTANEOUS FILTERS PRESERVED: Intersects Main and Parallel to securely pull Patient IDs!
 observeEvent(input$btn_apply_global_filter, {
   df_main <- isolate(selected_data_patient())
   idx_main <- input$patient_table_output_rows_all
@@ -318,7 +317,6 @@ observeEvent(list(selected_patient_fraser_variant(), input$selected_patient), {
   loaded_igv_tracks_fra(new_tracks)
 }, ignoreInit = TRUE)
 
-# 🌟 AUTO-TICKS DEFAULT COLUMNS ON STARTUP FOR PATIENT VIEW
 observeEvent(TRUE, {
   lapply(names(group_list), function(group_name) {
     group_id <- gsub(" ", "_", group_name)

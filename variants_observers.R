@@ -29,7 +29,6 @@ lapply(names(group_list), function(group_name) {
   })
 })
 
-# 🌟 GLITCH FIXED: The identical() checks prevent the tables from un-filtering each other!
 observeEvent(input$table_output_highlighted_rows_all, {
   req(input$table_output_highlighted_rows_all)
   if (is_actively_searched(input$table_output_highlighted_search, input$table_output_highlighted_search_columns)) {
@@ -60,7 +59,6 @@ observeEvent(input$parallel_table_rows_all, {
 broadcast_v_filter <- function(src, data) {
   payload <- list(src = src, data = data)
   
-  # ONLY overwrite main/parallel if the signal came from an Outlier table!
   if(src != "main" && src != "variants") v_cf_main(payload)
   if(src != "parallel" && src != "variants") v_cf_parallel(payload)
   
@@ -70,7 +68,6 @@ broadcast_v_filter <- function(src, data) {
   v_cf_fraser(if (src == "fraser") NULL else payload)
 }
 
-# 🌟 SIMULTANEOUS FILTERS PRESERVED: Takes Main/Parallel without erasing your current filters!
 observeEvent(input$btn_apply_global_filter, {
   df_main <- isolate(variants_display_data())
   idx_main <- input$table_output_highlighted_rows_all
@@ -85,7 +82,6 @@ observeEvent(input$btn_apply_global_filter, {
   visible_par <- df_par[idx_par, , drop=FALSE]
   
   if(nrow(visible_main) > 0 && nrow(visible_par) > 0) {
-    # Match both tables to get the precise sample_ids for the visible rows
     matching_par <- dplyr::semi_join(visible_par, visible_main, by = intersect(colnames(visible_par), c("chr", "pos", "ref", "alt", "strand")))
     if(nrow(matching_par) > 0) {
       broadcast_v_filter("variants", matching_par)
@@ -99,7 +95,6 @@ observeEvent(input$btn_apply_counts_filter, { df <- filtered_counts(); visible <
 observeEvent(input$btn_apply_outrider_filter, { df <- filtered_outrider(); visible <- df[input$outrider_table_rows_all, , drop=FALSE]; if(nrow(visible) > 0) { broadcast_v_filter("outrider", visible); showNotification("Global filters applied from Outrider.", type="message") } })
 observeEvent(input$btn_apply_fraser_filter, { df <- filtered_fraser(); visible <- df[input$fraser_table_rows_all, , drop=FALSE]; if(nrow(visible) > 0) { broadcast_v_filter("fraser", visible); showNotification("Global filters applied from Fraser.", type="message") } })
 
-# ROW CLICKS (ignoreNULL = TRUE protects selections)
 observeEvent(input$table_output_highlighted_rows_selected, {
   idx <- input$table_output_highlighted_rows_selected
   if(length(idx) > 0) {
@@ -229,7 +224,6 @@ observeEvent(list(selected_variant_main(), selected_variant_parallel()), {
   }
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
-# 🌟 AUTO-TICKS DEFAULT COLUMNS ON STARTUP
 observeEvent(TRUE, {
   lapply(names(group_list), function(group_name) {
     group_id <- gsub(" ", "_", group_name)

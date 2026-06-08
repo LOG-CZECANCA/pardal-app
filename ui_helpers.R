@@ -5,7 +5,6 @@ make_group_tabs <- function(id_prefix, ns = NULL) {
   lapply(names(group_list), function(group_name) {
     group_id <- gsub(" ", "_", group_name)
     
-    # NEW: Determine which columns should be checked by default
     # We check which columns in this specific group are in our 'required' list
     default_selections <- intersect(group_list[[group_name]], required_columns)
     
@@ -45,7 +44,6 @@ table.dataTable.display tbody tr.selected:hover td {
   color: white !important;
 }
 
-/* 🌟 NEW: Custom Styling for Output Radio Buttons 🌟 */
 .output-radio-group .radio label {
   display: block;
   padding: 8px 12px;

@@ -23,7 +23,7 @@ if (!exists("cached_gene_coords", inherits = FALSE)) {
 
 normalize_chr <- function(x) { as.character(x); gsub("^chr", "", trimws(x), ignore.case = TRUE) }
 
-# 🌟 PREBUILD FRASER EXTENDED BOUNDARIES
+# PREBUILD FRASER EXTENDED BOUNDARIES
 if (!exists("cached_fraser_data", inherits = FALSE)) {
   if (exists("fraser_data") && !is.null(fraser_data) && exists("exons_gr") && !is.null(exons_gr)) {
     fd <- as.data.frame(fraser_data)
@@ -289,7 +289,7 @@ filter_outliers_direct <- function(target_df, source_df) {
   return(target_df[keep_target, , drop=FALSE])
 }
 
-# 🌟 HIGH PERFORMANCE VECTORIZED FUZZY FILTERS (Counts Fix + Zero Padding Fallback)
+# HIGH PERFORMANCE VECTORIZED FUZZY FILTERS (Counts Fix + Zero Padding Fallback)
 fuzzy_filter_outliers <- function(outlier_df, var_df, p_data_ref, pad = 100000, gene_only = FALSE) {
   if (is.null(outlier_df) || nrow(outlier_df) == 0) return(outlier_df[0,,drop=FALSE])
   if (is.null(var_df) || nrow(var_df) == 0) return(outlier_df[0,,drop=FALSE])
@@ -343,7 +343,7 @@ fuzzy_filter_outliers <- function(outlier_df, var_df, p_data_ref, pad = 100000, 
   
   # STEP 2: Fast Coordinate Fallback
   if (!gene_only) {
-    actual_pad <- 0 # 🌟 Forces true intronic boundary only
+    actual_pad <- 0 # Forces true intronic boundary only
     
     v_chr <- normalize_chr(var_df$chr); v_pos <- suppressWarnings(as.numeric(var_df$pos))
     o_chr <- rep(NA_character_, nrow(outlier_df))
@@ -435,7 +435,7 @@ fuzzy_filter_variants <- function(var_df, outlier_df, p_data_ref, pad = 100000, 
   }
   
   if (!gene_only) {
-    actual_pad <- 0 # 🌟 Forces true intronic boundary only
+    actual_pad <- 0 # Forces true intronic boundary only
     
     v_chr <- normalize_chr(var_df$chr); v_pos <- suppressWarnings(as.numeric(var_df$pos))
     o_chr <- rep(NA_character_, nrow(outlier_df))
@@ -481,7 +481,7 @@ base_main_all <- reactive({
   df <- as.data.frame(variants)
   if (isTRUE(input$filter_af) && "AF" %in% colnames(df)) { af_num <- suppressWarnings(as.numeric(as.character(df$AF))); df <- df[which(is.na(af_num) | af_num < 0.01), , drop = FALSE] }
   
-  # 🌟 NEW CLINICAL SIGNIFICANCE FILTER
+  # NEW CLINICAL SIGNIFICANCE FILTER
   if (isTRUE(input$filter_clinsig)) { 
     clin_col <- grep("^(ClinVar_CLNSIG|CLNSIG|CLIN_SIG|clinical_significance)$", colnames(df), value = TRUE, ignore.case = TRUE)[1]
     if (!is.na(clin_col)) {
@@ -508,7 +508,7 @@ base_parallel_all <- reactive({
   if (isTRUE(input$filter_dp) && nrow(df) > 0) { d_dp <- suppressWarnings(as.numeric(as.character(df$dna_DP))); r_dp <- suppressWarnings(as.numeric(as.character(df$rna_DP))); df <- df[which(d_dp > 10 | r_dp > 10), , drop = FALSE] }
   if (isTRUE(input$filter_af) && "AF" %in% colnames(df)) { af_num <- suppressWarnings(as.numeric(as.character(df$AF))); df <- df[which(is.na(af_num) | af_num < 0.01), , drop = FALSE] }
   
-  # 🌟 NEW CLINICAL SIGNIFICANCE FILTER
+  # NEW CLINICAL SIGNIFICANCE FILTER
   if (isTRUE(input$filter_clinsig)) { 
     clin_col <- grep("^(ClinVar_CLNSIG|CLNSIG|CLIN_SIG|clinical_significance)$", colnames(df), value = TRUE, ignore.case = TRUE)[1]
     if (!is.na(clin_col)) {
@@ -668,8 +668,7 @@ filtered_fraser <- reactive({
   return(df)
 })
 
-# 🌟 HIGH SPEED COUNTS REACTIVE
-# 🌟 HIGH SPEED COUNTS REACTIVE (Coordinate Fallback Enabled!)
+# HIGH SPEED COUNTS REACTIVE (Coordinate Fallback Enabled!)
 filtered_counts <- reactive({
   if (!exists("batch_counts") || is.null(batch_counts)) return(NULL)
   df <- annotate_gene_coords(base_counts_all())

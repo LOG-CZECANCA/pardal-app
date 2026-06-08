@@ -7,7 +7,6 @@ variants_UI <- function(id) {
     sidebarPanel(
       width = 3,
       
-      # 🌟 Wrapped in our new CSS class to make them look like buttons
       div(class = "output-radio-group",
           radioButtons(
             ns("all_variants_view"),
@@ -25,7 +24,6 @@ variants_UI <- function(id) {
       tags$hr(),
       h4("Downloads"),
       
-      # 🌟 Download Buttons changed to transparent background & black text
       div(style = "display: flex; flex-direction: column; gap: 5px;",
           downloadButton(ns("dl_all_main"), "Variants (Main)", class = "btn-sm", style = "background-color: transparent; color: black; border: 1px solid #ccc;"),
           downloadButton(ns("dl_all_parallel"), "Variants (Parallel)", class = "btn-sm", style = "background-color: transparent; color: black; border: 1px solid #ccc;"),
@@ -83,7 +81,6 @@ variants_UI <- function(id) {
       
       conditionalPanel(condition = "input.all_variants_view == 'ase'", ns = ns, div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;", h4("Allele Specific Expression (all patients)"), actionButton(ns("btn_apply_ase_filter"), "Apply Filters Globally", class="btn-sm", style="background-color: #FC65AB; color: white; border: none;")), DTOutput(ns("ase_table"))),
       
-      # 🌟 CHECKBOX MOVED HERE TO BE VISIBLE IN COUNTS VIEW
       conditionalPanel(condition = "input.all_variants_view == 'counts'", ns = ns, 
                        checkboxInput(ns("filter_low_counts"), "Filter out Read Counts <= 3", value = TRUE),
                        div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;", h4("Read Counts"), actionButton(ns("btn_apply_counts_filter"), "Apply Filters Globally", class="btn-sm", style="background-color: #FC65AB; color: white; border: none;")), DTOutput(ns("counts_table")), tags$hr(), h4("GTEx Tissue Expression"), div(class = "no-clear-click", style = "margin-bottom: 15px; border: 1px solid #eee; padding: 15px; border-radius: 4px; background-color: white; overflow-x: auto;", plotly::plotlyOutput(ns("gtex_expression_plot"), height = "1000px"))),

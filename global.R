@@ -118,13 +118,13 @@ if(!is.null(par_path)) {
     ))) %>% as.data.frame()
 } else { parallel_data <- NULL }
 
-ase_path <- find_file_robust("R_ASE/ase_stat.csv")
+ase_path <- find_file_robust("ASE/ase_stat.csv")
 if(!is.null(ase_path)) {
   ase_data <- readr::read_csv(ase_path, col_types = cols(.default = col_character())) %>%
     mutate(SYMBOL = as.character(SYMBOL)) %>% as.data.frame()
 } else { ase_data <- NULL }
 
-# 🚀 HIGH SPEED LOADING FOR OUTLIER TABLES
+# HIGH SPEED LOADING FOR OUTLIER TABLES
 batch_counts <- load_data_robust("R_FEATURE_COUNTS/batch_counts.txt", data.table::fread, data.table = FALSE)
 outrider_data <- load_data_robust("R_OUTRIDER/outrider.csv", data.table::fread, data.table = FALSE)
 
