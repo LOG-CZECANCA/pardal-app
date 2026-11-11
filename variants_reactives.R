@@ -562,7 +562,7 @@ variants_filtered_cleaned <- reactive({
   
   o_df <- selected_outlier_bridge(); if (is.null(o_df) && !is.null(gb) && gb$src %in% c("ase", "counts", "outrider")) o_df <- gb$data
   if (!is.null(o_df) && nrow(o_df) > 0) {
-    if(!is.null(gb) && gb$src == "counts") return(fuzzy_filter_variants(df, o_df, base_parallel_all(), pad=100000, gene_only=TRUE))
+    if(!is.null(gb) && gb$src == "counts") return(fuzzy_filter_variants(df, o_df, base_parallel_all(), pad=100000, gene_only=FALSE))
     return(fuzzy_filter_variants(df, o_df, base_parallel_all(), pad=100000))
   }
   
@@ -591,7 +591,7 @@ filtered_parallel_data <- reactive({
   
   if (is.null(o_df) && !is.null(gb) && gb$src %in% c("ase", "counts", "outrider")) o_df <- gb$data
   if (!is.null(o_df) && nrow(o_df) > 0) {
-    if(!is.null(gb) && gb$src == "counts") return(fuzzy_filter_variants(df, o_df, df, pad=100000, gene_only=TRUE))
+    if(!is.null(gb) && gb$src == "counts") return(fuzzy_filter_variants(df, o_df, df, pad=100000, gene_only=FALSE))
     return(fuzzy_filter_variants(df, o_df, df, pad=100000))
   }
   
@@ -661,7 +661,7 @@ filtered_fraser <- reactive({
   if (is.null(out_df) && !is.null(selected_outlier_bridge())) out_df <- selected_outlier_bridge()
   if (is.null(out_df) && !is.null(gb) && gb$src %in% c("counts", "outrider", "ase")) out_df <- gb$data
   if (!is.null(out_df) && nrow(out_df) > 0) {
-    if(!is.null(gb) && gb$src == "counts") v_bridge <- fuzzy_filter_variants(base_parallel_all(), out_df, base_parallel_all(), pad=100000, gene_only=TRUE)
+    if(!is.null(gb) && gb$src == "counts") v_bridge <- fuzzy_filter_variants(base_parallel_all(), out_df, base_parallel_all(), pad=100000, gene_only=FALSE)
     else v_bridge <- fuzzy_filter_variants(base_parallel_all(), out_df, base_parallel_all(), pad=100000)
     return(filter_fraser_by_variant_gr(df, v_bridge, base_parallel_all()))
   }

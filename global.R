@@ -109,7 +109,7 @@ if(!is.null(par_path)) {
   parallel_data <- read_rds(par_path) %>% ungroup() %>%
     dplyr::select(any_of(c("Gene", "SYMBOL", "Feature", "HGVSc", "HGVSp",
                            "location", "Consequence", "chr", "pos", "strand",
-                           "ref", "alt", "sample_id", "PARALLEL_STATUS", "DNA_ONLY_count",
+                           "ref", "alt", "sample_id", "PARALLEL_STATUS", "RNA_AS_DNA", "DNA_ONLY_count",
                            "RNA_ONLY_count", "BOTH_count",
                            "rna_qual", "rna_GT", "rna_REF_AD", "rna_ALT_AD",
                            "rna_DP", "rna_GQ", "rna_PL", "rna_PGT", "rna_PID", "rna_PS",
